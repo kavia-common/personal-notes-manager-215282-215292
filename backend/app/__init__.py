@@ -39,15 +39,18 @@ def create_app():
 
     # Initialize a single Api instance and register blueprints once
     global api
-    api = Api(app)
-    api.spec.tags = [
-        {"name": "Health", "description": "Health check route"},
-        {"name": "Notes", "description": "CRUD operations for notes"},
-    ]
-
-    # Register blueprints
-    api.register_blueprint(health_blp)
-    api.register_blueprint(notes_blp)
+    if not hasattr(app, "extensions") or "smorest" not in app.extensions:
+        api = Api(app)
+        api.spec.tags = [
+            {"name": "Health", "description": "Health check route"},
+            {"name": "Notes", "description": "CRUD operations for notes"},
+        ]
+        # Register blueprints
+        api.register_blueprint(health_blp)
+        api.register_blueprint(notes_blp)
+    else:
+        # If already initialized (e.g., due to a hot reload), reuse existing instance
+        api = app.extensions["smorest"]
 
     # Create tables
     with app.app_context():
