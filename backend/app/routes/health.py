@@ -6,6 +6,7 @@ blp = Blueprint("Health", "health", url_prefix="/health", description="Health ch
 @blp.route("")
 class HealthCheck(MethodView):
     """Health check endpoint."""
+    # PUBLIC_INTERFACE
     def get(self):
         """Returns service health status."""
         return {"status": "ok"}

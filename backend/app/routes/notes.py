@@ -16,12 +16,14 @@ blp = Blueprint(
 class NotesList(MethodView):
     """List and create notes."""
 
+    # PUBLIC_INTERFACE
     @blp.response(200, NoteSchema(many=True), description="List all notes")
     def get(self):
         """List all notes."""
         notes = Note.query.order_by(Note.updated_at.desc()).all()
         return [n.to_dict() for n in notes]
 
+    # PUBLIC_INTERFACE
     @blp.arguments(NoteCreateSchema, as_kwargs=True)
     @blp.response(201, NoteSchema, description="Create a new note")
     def post(self, title, content):
@@ -40,6 +42,7 @@ class NotesList(MethodView):
 class NoteItem(MethodView):
     """Retrieve, update, and delete a single note."""
 
+    # PUBLIC_INTERFACE
     @blp.response(200, NoteSchema, description="Retrieve a single note")
     def get(self, note_id: int):
         """Retrieve a note by id."""
@@ -48,6 +51,7 @@ class NoteItem(MethodView):
             abort(404, message="Note not found")
         return note.to_dict()
 
+    # PUBLIC_INTERFACE
     @blp.arguments(NoteUpdateSchema, as_kwargs=True)
     @blp.response(200, NoteSchema, description="Update a note")
     def put(self, note_id: int, **kwargs):
@@ -70,6 +74,7 @@ class NoteItem(MethodView):
             db.session.rollback()
             abort(500, message=f"Database error: {str(e)}")
 
+    # PUBLIC_INTERFACE
     @blp.response(204, description="Delete a note")
     def delete(self, note_id: int):
         """Delete a note."""

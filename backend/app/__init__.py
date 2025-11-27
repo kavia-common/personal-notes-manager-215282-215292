@@ -5,6 +5,10 @@ from .routes.health import blp as health_blp
 from .routes.notes import blp as notes_blp
 from .models import db
 
+# Module-level singletons so other modules (e.g., generate_openapi) can import them safely
+api: Api | None = None  # Will be initialized inside create_app
+
+
 def create_app():
     """Application factory to create Flask app with configured extensions and routes."""
     app = Flask(__name__)
@@ -33,6 +37,8 @@ def create_app():
     # Init extensions
     db.init_app(app)
 
+    # Initialize a single Api instance and register blueprints once
+    global api
     api = Api(app)
     api.spec.tags = [
         {"name": "Health", "description": "Health check route"},
@@ -49,6 +55,6 @@ def create_app():
 
     return app
 
-# Instantiate the app for WSGI/CLI usage
+
+# Instantiate the app for WSGI/CLI usage without re-creating Api
 app = create_app()
-api = Api(app)
